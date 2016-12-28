@@ -1,8 +1,8 @@
-function [ElectricField,r,phi] = CalculateEvanescentElectricField(lambda,A_in,phi_0,FiberRadius)
+function [ElectricField,r,phi] = CalculateEvanescentElectricField(lambda,A_in,phi_0,FiberRadius,beta)
 
 n1 = 1.5;            % Refractive Index Inside Waveguide
 n2 = 1.0;            % RefractiveIndexOutsideWaveguide
-beta = 5.0;            % Mode Propagation Constant
+%beta = 1.0;            % Mode Propagation Constant 
 k0 = 2*pi/lambda;    % WaveNumber
 h11 = sqrt(k0^2*n1^2-beta^2);        % Characteristic Decay Length Inside Fiber
 q11 = sqrt(beta^2-k0^2*n2^2);             % Characteristic Decay Length Outside Fiber
@@ -17,7 +17,7 @@ s11 = (1/(h11*a)^2+1/(q11*a)^2)*(D_besselj(1,h11*a)/(h11*a*besselj(1,h11*a))+...
 A = A_in*beta*besselj(1,h11*a)/(2*q11*besselk(1,q11*a));
 B = 1i*A_in*besselj(1,h11*a)/besselk(1,q11*a);
 
-[r, phi]  = ndgrid(linspace(a*1.1,3*a,1000),linspace(0,2*pi,100));
+[r, phi]  = ndgrid(linspace(a*1.07,7*a,1000),linspace(0,2*pi,1300));
 
 Ex = A*((1-s11)*besselk(0,q11*r).*cos(phi_0)...
     +(1+s11)*besselk(2,q11*r).*cos(2*phi-phi_0));
