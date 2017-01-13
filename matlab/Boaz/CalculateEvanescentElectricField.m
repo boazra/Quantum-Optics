@@ -1,15 +1,31 @@
-function [ElectricField,r,phi] = CalculateEvanescentElectricField(lambda,A_in,phi_0,FiberRadius,beta)
+function [ElectricFieldEnergy,r,phi] = CalculateEvanescentElectricField(lambda,lambda_res,A_in,phi_0,FiberRadius,beta,mode_area,RadialVector)
+% Returs the energy of the electric field (µk) and the polar coordinates used to
+% plot it correctly.
+% The electric field calculations are taken from kimble article - http://iopscience.iop.org/article/10.1088/1367-2630/14/2/023056/pdf
+% lambda        - Input field wavelength
+% lambda_res    - Resonant frequecny of the atom
+% A_in          - Input field intensity
+% phi_0         - polarization angle relative to the fiber
+% FiberRadius   - Radius of waveguide
+% beta          - Mode propagation constant
+% mode_area     - Effective area (cm^2) occupied by the mode
+% RadialVector  - A vector that holds the points in the radial direction
 
-n1 = 1.5;            % Refractive Index Inside Waveguide
-n2 = 1.0;            % RefractiveIndexOutsideWaveguide
-%beta = 1.0;            % Mode Propagation Constant 
-k0 = 2*pi/lambda;    % WaveNumber
-h11 = sqrt(k0^2*n1^2-beta^2);        % Characteristic Decay Length Inside Fiber
-q11 = sqrt(beta^2-k0^2*n2^2);             % Characteristic Decay Length Outside Fiber
-a =FiberRadius;             % Fiber Radius nanometer
+n1 = 1.5;                           % Refractive Index Inside Waveguide
+n2 = 1.0;                           % RefractiveIndexOutsideWaveguide
+k0 = 2*pi/lambda;                   % Wave number
+h11 = sqrt(k0^2*n1^2-beta^2);       % Characteristic Decay Length Inside Fiber
+q11 = sqrt(beta^2-k0^2*n2^2);       % Characteristic Decay Length Outside Fiber
+a =FiberRadius;                     % Fiber Radius nanometer (just changing letters for bervity)
+Kb = 1.38e-23;                      % Boltzmann constant Joule/Kelvin
+Isat = 2.503;                       % Steck for cycling tansition
+gamma = 6e6;                        % [Hz] in the 1*gamma formulations (books, not ofer)
+c = 3e8;                            % Speed of light  [m/sec]
+h_bar = 1.054e-34;                  % Planks constant [J*sec]
+finesse = 2.5e4;                    % finnes of the cavity
 
-D_besselk = @(nu,z) 0.5*(besselk(nu-1,z)-besselk(nu+1,z));
-D_besselj = @(nu,z) 0.5*(besselj(nu-1,z)-besselj(nu+1,z));
+D_besselk = @(nu,z) 0.5*(besselk(nu-1,z)-besselk(nu+1,z));  % Auxillary function for the derivative of besselk function
+D_besselj = @(nu,z) 0.5*(besselj(nu-1,z)-besselj(nu+1,z));  % Auxillary function for the derivative of besselj function
 
 s11 = (1/(h11*a)^2+1/(q11*a)^2)*(D_besselj(1,h11*a)/(h11*a*besselj(1,h11*a))+...
     D_besselk(1,q11*a)/(q11*a*besselk(1,q11*a)));
@@ -17,18 +33,21 @@ s11 = (1/(h11*a)^2+1/(q11*a)^2)*(D_besselj(1,h11*a)/(h11*a*besselj(1,h11*a))+...
 A = A_in*beta*besselj(1,h11*a)/(2*q11*besselk(1,q11*a));
 B = 1i*A_in*besselj(1,h11*a)/besselk(1,q11*a);
 
-[r, phi]  = ndgrid(linspace(a*1.07,7*a,1000),linspace(0,2*pi,1300));
+[r, phi]  = ndgrid(RadialVector,linspace(0,2*pi,1000));
 
-Ex = A*((1-s11)*besselk(0,q11*r).*cos(phi_0)...
-    +(1+s11)*besselk(2,q11*r).*cos(2*phi-phi_0));
-
-Ey = A*((1-s11)*besselk(0,q11*r)*sin(phi_0)...
-    +(1+s11)*besselk(2,q11*r).*sin(2*phi-phi_0));
-
+Ex = A*((1-s11)*besselk(0,q11*r).*cos(phi_0)+(1+s11)*besselk(2,q11*r).*cos(2*phi-phi_0));
+Ey = A*((1-s11)*besselk(0,q11*r)*sin(phi_0)+(1+s11)*besselk(2,q11*r).*sin(2*phi-phi_0));
 Ez = B*besselk(1,q11*r).*cos(phi-phi_0);
 
-ElectricField = abs(Ex.^2+Ey.^2+Ez.^2);
+ElectricFieldIntensity = abs(Ex.^2+Ey.^2+Ez.^2);
 
+res_freq = 2*pi*c/(lambda_res);
+delta = 2*pi*c/(lambda)-res_freq;
 
+I = (ElectricFieldIntensity/mode_area)*(0.3^2)*finesse;
+s = (I/Isat)*(1/(1+(2*delta/gamma)^2));
+
+U = h_bar*s*delta./(2*(1+s));
+ElectricFieldEnergy = 1e6*U/Kb; % [µK]
 
 end
