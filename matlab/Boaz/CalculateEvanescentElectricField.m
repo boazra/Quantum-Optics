@@ -1,19 +1,21 @@
-function [ElectricFieldEnergy,r,phi] = CalculateEvanescentElectricField(lambda,lambda_res,A_in,phi_0,FiberRadius,beta,mode_area,RadialVector)
+function [ElectricFieldEnergy,r,phi] = CalculateEvanescentElectricField(lambda,lambda_res,A_in,phi_0,FiberRadius,mode_area,RadialVector,AzimuthalVector)
 % Returs the energy of the electric field (µk) and the polar coordinates used to
 % plot it correctly.
 % The electric field calculations are taken from kimble article - http://iopscience.iop.org/article/10.1088/1367-2630/14/2/023056/pdf
-% lambda        - Input field wavelength
-% lambda_res    - Resonant frequecny of the atom
-% A_in          - Input field intensity
-% phi_0         - polarization angle relative to the fiber
-% FiberRadius   - Radius of waveguide
-% beta          - Mode propagation constant
-% mode_area     - Effective area (cm^2) occupied by the mode
-% RadialVector  - A vector that holds the points in the radial direction
+% lambda          - Input field wavelength
+% lambda_res      - Resonant frequecny of the atom
+% A_in            - Input field intensity
+% phi_0           - polarization angle relative to the fiber
+% FiberRadius     - Radius of waveguide
+% beta            - Mode propagation constant
+% mode_area       - Effective area (cm^2) occupied by the mode
+% RadialVector    - A vector that holds the points in the radial direction
+% AzimuthalVector - A vecotr that holds the angles for the field calculation
 
-n1 = 1.5;                           % Refractive Index Inside Waveguide
-n2 = 1.0;                           % RefractiveIndexOutsideWaveguide
+n1 = 1.447;                           % Refractive Index Inside Waveguide
+n2 = 1.0;                           % Refractive Index Outside Waveguide
 k0 = 2*pi/lambda;                   % Wave number
+beta = (n1+n2)/2*k0;
 h11 = sqrt(k0^2*n1^2-beta^2);       % Characteristic Decay Length Inside Fiber
 q11 = sqrt(beta^2-k0^2*n2^2);       % Characteristic Decay Length Outside Fiber
 a =FiberRadius;                     % Fiber Radius nanometer (just changing letters for bervity)
@@ -33,7 +35,12 @@ s11 = (1/(h11*a)^2+1/(q11*a)^2)*(D_besselj(1,h11*a)/(h11*a*besselj(1,h11*a))+...
 A = A_in*beta*besselj(1,h11*a)/(2*q11*besselk(1,q11*a));
 B = 1i*A_in*besselj(1,h11*a)/besselk(1,q11*a);
 
-[r, phi]  = ndgrid(RadialVector,linspace(0,2*pi,1000));
+if length(AzimuthalVector) > 1
+    [r, phi]  = ndgrid(RadialVector,AzimuthalVector);
+else
+    phi = AzimuthalVector;
+    r = RadialVector;    
+end
 
 Ex = A*((1-s11)*besselk(0,q11*r).*cos(phi_0)+(1+s11)*besselk(2,q11*r).*cos(2*phi-phi_0));
 Ey = A*((1-s11)*besselk(0,q11*r)*sin(phi_0)+(1+s11)*besselk(2,q11*r).*sin(2*phi-phi_0));
@@ -41,10 +48,9 @@ Ez = B*besselk(1,q11*r).*cos(phi-phi_0);
 
 ElectricFieldIntensity = abs(Ex.^2+Ey.^2+Ez.^2);
 
-res_freq = 2*pi*c/(lambda_res);
-delta = 2*pi*c/(lambda)-res_freq;
+delta = 2*pi*c*(1/lambda-1/lambda_res);
 
-I = (ElectricFieldIntensity/mode_area)*(0.3^2)*finesse;
+I = (ElectricFieldIntensity/mode_area)*finesse;
 s = (I/Isat)*(1/(1+(2*delta/gamma)^2));
 
 U = h_bar*s*delta./(2*(1+s));

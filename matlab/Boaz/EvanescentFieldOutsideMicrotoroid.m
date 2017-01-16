@@ -1,44 +1,185 @@
 close all
 clear all
+%% constants
 
 Phi_0 = 0.0;                                 % Input Polariztion Angle
 LambdaRed = 1085e-9;                         % Red WaveLength [meter]
 LambdaBlue = 729e-9;                         % Blue WaveLength [meter]
+lambda_res1 = 780e-9;                        % Atom resonance 1 [meter]
+lambda_res2 = 795e-9;                        % Atom resonance 2 [meter]
 ToroidSmallRadius = 250e-9;                  % Fiber Radius [meter]
 Kb = 1.38e-23;                               % Joule/Kelvin
-A_in_Red = 1000e-3;                          % Joule/sec
-A_in_Blue = 330e-3;                         % Joule/sec
+A_in_Red = 1190e-3;                          % Joule/sec
+A_in_Blue = 455e-3;                          % Joule/sec
 h_bar = 1.054e-34;                           % meter 
 ToroidLargeRadius = 3971.7e-9;               % meter
 c3 = 1e6*(1.6e-19*4.9*(1e-10)^3)*(1e9)^3/Kb; % [microKelvin*nm^3]
-lambda_res1 = 780e-9;                        % Atom resonance 1 [meter]
-lambda_res2 = 795e-9;                        % Atom resonance 2 [meter]
+
 mode_area = 300e-8/(40*pi);                  % Area occupied by the mode [cm^2] 
-ROILength = 2000e-9;                         % length of Region Of Interest away from the fiber
-Margin = 33e-9;                              % Too close to the surface the plot explode because of vdw
+ROILength = 1500e-9;                         % length of Region Of Interest away from the fiber
+Margin = 15e-9;                              % Too close to the surface the plot explode because of vdw
+
 RadialVector = linspace(ToroidSmallRadius+Margin,ToroidSmallRadius+Margin+ROILength,1000);
-NumOscillationsInToroid = round(2*pi*ToroidLargeRadius/LambdaRed); 
+Optimization = false;
+%% Find optimal values for the intensity of the blue and red fields
+if Optimization
+    OptimizationN = 50;
+    TrapDepth = zeros(OptimizationN,OptimizationN);
+    TrapSpatialWidth = zeros(OptimizationN,OptimizationN);
+    Power1 = linspace(100,1500,OptimizationN) *1e-3;
+    Power2 = linspace(300,4500,OptimizationN) *1e-3;
+    VanDerWaals = -c3./(((RadialVector-ToroidSmallRadius)*1e9).^3);
+    AzimuthalVector = 0;
+    for i = 1:OptimizationN 
+        A_in_Blue = Power1(i);
+        for j = 1:OptimizationN
+            A_in_Red = Power2(j);
+            RedField1 = CalculateEvanescentElectricField(LambdaRed,lambda_res1,A_in_Red,Phi_0,ToroidSmallRadius,mode_area,RadialVector,0);
+            RedField2 = CalculateEvanescentElectricField(LambdaRed,lambda_res2,A_in_Red,Phi_0,ToroidSmallRadius,mode_area,RadialVector,0);
+            BlueField1 = CalculateEvanescentElectricField(LambdaBlue,lambda_res1,A_in_Blue,Phi_0,ToroidSmallRadius,mode_area*0.67,RadialVector,0);
+            [BlueField2,r,phi] = CalculateEvanescentElectricField(LambdaBlue,lambda_res2,A_in_Blue,Phi_0,ToroidSmallRadius,mode_area*0.67,RadialVector,0);        
+            TotalField = BlueField1+RedField1+BlueField2+RedField2+VanDerWaals;
+            if findpeaks(TotalField) > 50
+                peak = findpeaks(-TotalField(40:end));
+                if ~isempty(peak)
+                   TrapDepth(i,j) = peak;                 
+                   TrapSpatialWidth(i,j) = GetTrapWidth(-TotalField,0.7);
+                end
+            else
+                   TrapDepth(i,j) = 0;
+            end
+        end
+        i
+    end
+    
+    %% plot optimization process results
+    imagesc(Power1*1000,Power2*1000, TrapDepth)
+    title('Trap Depth(탃) VS Field Intensities');
+    xlabel('Blue Field Intensity(mW)');
+    ylabel('Red Field Intensity(mW)');
+    set(gca,'Ydir','Normal');
+    set(gca,'FontSize',20)
+    colormap jet
 
-RedField1 = CalculateEvanescentElectricField(LambdaRed,lambda_res1,A_in_Red,Phi_0,ToroidSmallRadius,1.0,mode_area,RadialVector);
-RedField2 = CalculateEvanescentElectricField(LambdaRed,lambda_res2,A_in_Red,Phi_0,ToroidSmallRadius,1.0,mode_area,RadialVector);
-BlueField1 = CalculateEvanescentElectricField(LambdaBlue,lambda_res1,A_in_Blue,Phi_0,ToroidSmallRadius,1.0,mode_area*0.67,RadialVector);
-[BlueField2,r,phi] = CalculateEvanescentElectricField(LambdaBlue,lambda_res2,A_in_Blue,Phi_0,ToroidSmallRadius,1.0,mode_area*0.67,RadialVector);
-VanDerWaals = -c3./(((r-ToroidSmallRadius)*1e9).^3);
-TotalField = BlueField1+RedField1+BlueField2+RedField2+VanDerWaals;
+    [C,I] = max(TrapDepth(:));
+    [blueInd,redInd] = ind2sub(size(TrapDepth),I);    
+    
+else
+    %% calculate for a specific intensity
+    AzimuthalVector = linspace(0,2*pi,1000);    
+    RedField1 = CalculateEvanescentElectricField(LambdaRed,lambda_res1,A_in_Red,Phi_0,ToroidSmallRadius,mode_area,RadialVector,AzimuthalVector);
+    RedField2 = CalculateEvanescentElectricField(LambdaRed,lambda_res2,A_in_Red,Phi_0,ToroidSmallRadius,mode_area,RadialVector,AzimuthalVector);
+    BlueField1 = CalculateEvanescentElectricField(LambdaBlue,lambda_res1,A_in_Blue,Phi_0,ToroidSmallRadius,mode_area*0.67,RadialVector,AzimuthalVector);
+    [BlueField2,r,phi] = CalculateEvanescentElectricField(LambdaBlue,lambda_res2,A_in_Blue,Phi_0,ToroidSmallRadius,mode_area*0.67,RadialVector,AzimuthalVector);        
+    VanDerWaals = -c3./(((r-ToroidSmallRadius)*1e9).^3);
+    TotalField = BlueField1+RedField1+BlueField2+RedField2+VanDerWaals;
+       
+    [x,y] = pol2cart(phi,r);
+    %% plot fiber cross section
+    figure(1)    
+    surf(x*1e9,y*1e9,TotalField,'EdgeColor','none','LineStyle','none','FaceLighting','phong');
+    view(0,90)
+    colormap(jet(1024))
+    xlim([-ToroidSmallRadius*2e9 ToroidSmallRadius*2e9])
+    ylim([-ToroidSmallRadius*2e9 ToroidSmallRadius*2e9])
+    daspect([max(daspect)*[1 1] 1]);
+    colorbar();    
+    title('Field Cross-Section of a fiber');
+    xlabel('X(nm)');
+    ylabel('Y(nm)');
+    set(gca,'Ydir','Normal');
+    set(gca,'FontSize',20)  
+    
+    %% plot radial dependence at maximum
+    figure(2)
+    hold on    
+    if length(AzimuthalVector) > 1
+        TotalFieldSlice = TotalField(:,1);
+        plot(r(:,1)',RedField1(:,1)','r')
+        plot(r(:,1)',BlueField1(:,1)','b')
+        plot(r(:,1)',RedField2(:,1)','r--')
+        plot(r(:,1)',BlueField2(:,1)','b--')
+        plot(r(:,1)',VanDerWaals(:,1)','g')
+        plot(r(:,1)', TotalField(:,1)','k');
+        legend('red1','blue1','red2','blue2','Van Der Waals','Total');
+        y1 = ylim;
+        ylim([y1(1)/2 max(TotalFieldSlice)*1.1]);        
+        title(sprintf('Trap Potential VS Radial Distance. Blue: %d (mW). Red: %d (mW)',A_in_Blue*1000,A_in_Red*1000));
+        xlabel('Radial Distance(nm)');
+        ylabel('Potentail(탃)');
+        set(gca,'Ydir','Normal');
+        set(gca,'FontSize',20)  
+        axes('position',[.55 .175 .35 .35])
+        box on     
+        hold on
+        title('Trap Inset')
+        plot(r(:,1)',RedField1(:,1)','r')
+        plot(r(:,1)',BlueField1(:,1)','b')
+        plot(r(:,1)',RedField2(:,1)','r--')
+        plot(r(:,1)',BlueField2(:,1)','b--')
+        plot(r(:,1)',VanDerWaals(:,1)','g')
+        plot(r(:,1)', TotalField(:,1)','k');
+        peak = findpeaks(-TotalFieldSlice(40:end));
+        ylim([-peak*1.1 peak/3]);
+    else    
+        plot(r,RedField1,'r')
+        plot(r,BlueField1,'b')
+        plot(r,RedField2,'r--')
+        plot(r,BlueField2,'b--')
+        plot(r,VanDerWaals,'g')
+        plot(r, TotalField,'k');
+        legend('red1','blue1','red2','blue2','Van Der Waals','Total');
+        y1 = ylim;
+        ylim([y1(1)/2 max(TotalField)*1.1])  
+        title(sprintf('Trap Potential VS Radial Distance. Blue: %d (mW). Red: %d (mW)',A_in_Blue*1000,A_in_Red*1000));
+        xlabel('Radial Distance(nm)');
+        ylabel('Potentail(탃)');
+        set(gca,'Ydir','Normal');
+        set(gca,'FontSize',20)  
+        axes('position',[.55 .175 .35 .35])
+        box on     
+        hold on
+        title('Trap Inset')
+        plot(r,RedField1,'r')
+        plot(r,BlueField1,'b')
+        plot(r,RedField2,'r--')
+        plot(r,BlueField2,'b--')
+        plot(r,VanDerWaals,'g')
+        plot(r, TotalField,'k');
+        peak = findpeaks(-TotalField(40:end));
+        ylim([-peak*1.1 peak/3])  
+    end
+    
+    
+    %% plot 3d potential
+    figure(3)
+    NumOscillationsInToroid = round(2*pi*ToroidLargeRadius/LambdaRed);
+    ToroidField = repmat(TotalField(:,1),1,size(phi,2)) .* cos(NumOscillationsInToroid*phi);    
+    [x,y] = pol2cart(phi,r+ToroidLargeRadius);
+    surf(x*1e9,y*1e9,ToroidField,'EdgeColor','none','LineStyle','none','FaceLighting','phong');    
+    colormap(jet(1024))
+    title('Total Toroid Potential');
+    xlabel('X(nm)');
+    ylabel('Y(nm)');  
+    zlabel('Potential (탃)');
+    set(gca,'FontSize',20)         
+    daspect([max(daspect)*[0.01 0.01] 0.1])
+    caxis([-peak*1.1 peak/3])
+    zlim([-peak*6 peak*5])
+    
+    
+    %% plot toroid along with potentail      
+    hold on
+    ToroidColormap = gray(256);
+    ToroidColormap = ToroidColormap(1:200,:);
+    ToroidColormap = cat(1,ToroidColormap,flip(ToroidColormap,1));
+    [ToroidBodyX,ToroidBodyY,ToroidBodyZ] = Torus(ToroidLargeRadius*1e9,ToroidSmallRadius*1e9,360);
+    ToroidBodyZ = ToroidBodyZ/max(max(ToroidBodyZ))*max(max(ToroidBodyX))*ToroidSmallRadius/ToroidLargeRadius*5;
+    surf(ToroidBodyX,ToroidBodyY,ToroidBodyZ,'EdgeColor','none','LineStyle','none','FaceLighting','phong');
+    
+    
+end
 
-ToroidField = repmat(TotalField(:,1),1,size(phi,2)) .* cos(NumOscillationsInToroid*phi);
-[x,y] = pol2cart(phi,r+ToroidLargeRadius);
 
-figure(1)
-surf(x,y,ToroidField,'EdgeColor','none','LineStyle','none','FaceLighting','phong');
-colormap jet
 
-figure(2)
-hold on
-plot(r(:,1),RedField1(:,1),'r')
-plot(r(:,1),BlueField1(:,1),'b')
-plot(r(:,1),RedField2(:,1),'r--')
-plot(r(:,1),BlueField2(:,1),'b--')
-plot(r(:,1),VanDerWaals(:,1),'g')
-plot(r(:,1), ToroidField(:,1),'k');
 
