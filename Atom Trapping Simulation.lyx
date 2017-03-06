@@ -1,0 +1,1769 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\renewcommand*{\theenumi}{(\alph{enumi})}  \renewcommand*{\labelenumi}{\theenumi}
+\usepackage{color}
+\usepackage{listings}
+\definecolor{hellgelb}{rgb}{1,1,0.85}
+\definecolor{colKeys}{rgb}{0,0,1}
+\definecolor{colIdentifier}{rgb}{0,0,0}
+\definecolor{colComments}{rgb}{1,0,0}
+\definecolor{colString}{rgb}{0,0.5,0}
+\lstset{%
+      language=Matlab,%
+      float=hbp,%
+      basicstyle=\footnotesize\ttfamily,%
+      identifierstyle=\color{colIdentifier},%
+      keywordstyle=\color{colKeys},%
+      stringstyle=\color{colString},%
+      commentstyle=\itshape\color{colComments},%
+      columns=fixed,
+      tabsize=4,%
+      frame=single,%
+      framerule=1pt,
+      extendedchars=true,%
+      showspaces=false,%
+      showstringspaces=false,%
+      numbers=left,%
+      numberstyle=\tiny\ttfamily,%
+      numbersep=1em,%
+      breaklines=true,%
+      breakindent=10pt,%
+      backgroundcolor=\color{hellgelb},%
+      breakautoindent=true,%
+      captionpos=t,%
+      xleftmargin=1em,%
+      xrightmargin=\fboxsep%
+}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing double
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 2
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 10page%
+\topmargin 10pheight%
+\rightmargin 10page%
+\bottommargin 10pheight%
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Atom trapping simulation
+\end_layout
+
+\begin_layout Section*
+Theoretical
+\end_layout
+
+\begin_layout Standard
+Calculation of field intensity was done following Kimble 
+\begin_inset CommandInset href
+LatexCommand href
+name "A state-insensitive, compensated nanofiber trap"
+target "http://iopscience.iop.org/article/10.1088/1367-2630/14/2/023056/meta;jsessionid=2EF51764C849CA170CC54B2858E50D7B.c2.iopscience.cld.iop.org"
+
+\end_inset
+
+, where they got the following equations for the field of a fiber with radius
+ 
+\begin_inset Formula $a$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{x}\left(r,\phi,z,t\right)=A_{lin}\frac{\beta_{11}J_{1}\left(h_{11}a\right)}{2q_{11}K_{1}\left(q_{11}a\right)}\left[\left(1-s_{11}\right)K_{0}\left(q_{11}r\right)\cos\left(\phi_{0}\right)+\left(1+s_{11}\right)K_{2}\left(q_{11}r\right)\cos\left(2\phi-\phi_{0}\right)\right]e^{i\left(\omega t-\beta_{11}z\right)}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+E_{y}\left(r,\phi,z,t\right)=A_{lin}\frac{\beta_{11}J_{1}\left(h_{11}a\right)}{2q_{11}K_{1}\left(q_{11}a\right)}\left[\left(1-s_{11}\right)K_{0}\left(q_{11}r\right)\sin\left(\phi_{0}\right)+\left(1+s_{11}\right)K_{2}\left(q_{11}r\right)\sin\left(2\phi-\phi_{0}\right)\right]e^{i\left(\omega t-\beta_{11}z\right)}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+E_{z}\left(r,\phi,z,t\right)=iA_{lin}\frac{J_{1}\left(h_{11}a\right)}{K_{1}\left(q_{11}a\right)}K_{1}\left(q_{11}r\right)\cos\left(\phi-\phi_{0}\right)e^{i\left(\omega t-\beta_{11}z\right)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+s_{11}=\left[\frac{1}{\left(h_{11}a\right)^{2}}+\frac{1}{\left(q_{11}a\right)^{2}}\right]\left[\frac{J_{1}^{'}\left(h_{11}a\right)}{h_{11}aJ_{1}\left(h_{11}a\right)}+\frac{K_{1}^{'}\left(q_{11}a\right)}{q_{11}aK_{1}\left(q_{11}a\right)}\right]
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+h_{11}=\sqrt{k_{0}^{2}n_{1}^{2}-\beta_{11}^{2}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+q_{11}=\sqrt{\beta_{11}^{2}-k_{0}^{2}n_{2}^{2}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+I\left(r;\phi=0,z=0,t=0\right)\equiv I\left(r\right)=\sqrt{\left|E_{x}\right|^{2}+\left|E_{y}\right|^{2}+\left|E_{z}\right|^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here, 
+\begin_inset Formula $\phi$
+\end_inset
+
+ denotes the azimuthal position in the transverse plane, 
+\begin_inset Formula $\phi_{0}$
+\end_inset
+
+ indicates the polarization axis for the input polarization relative to
+ the 
+\begin_inset Formula $x$
+\end_inset
+
+ axis, 
+\begin_inset Formula $n_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $n_{2}$
+\end_inset
+
+ are the indices of refraction inside and outside the waveguide, 
+\begin_inset Formula $\beta_{11}$
+\end_inset
+
+ is the mode propagation constant, 
+\begin_inset Formula $\nicefrac{1}{h_{11}}$
+\end_inset
+
+ is the characteristic decay length for the guided mode inside the fiber,
+ 
+\begin_inset Formula $\nicefrac{1}{q_{11}}$
+\end_inset
+
+ is the characteristic decay length for the guided mode outside the fiber,
+ 
+\begin_inset Formula $A_{lin}$
+\end_inset
+
+ is the real-valued amplitude for the linearly polarized input, 
+\begin_inset Formula $J_{l}$
+\end_inset
+
+ is the 
+\begin_inset Formula $lth$
+\end_inset
+
+ Bessel function of the first kind and 
+\begin_inset Formula $K_{l}$
+\end_inset
+
+ is the 
+\begin_inset Formula $lth$
+\end_inset
+
+ modified Bessel function of the second kind.
+\end_layout
+
+\begin_layout Standard
+After calculating the field intensity, we want to get the trap potential
+ the 
+\begin_inset Formula $^{87}Rb$
+\end_inset
+
+ atoms see.
+ For this we look at a resonance frequencies of the atom and compute the
+ dipole potential a field with certain intensity will cause (Following 
+\begin_inset CommandInset href
+LatexCommand href
+name "Optical dipole traps for neutral atoms"
+target "https://arxiv.org/abs/physics/9902072"
+
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{equation}
+U_{dipole}\left(r\right)=\frac{\pi c^{2}\Gamma}{2\omega_{0}^{3}}\left(\frac{2+{\cal P}g_{F}m_{F}}{\Delta_{2,F}}+\frac{1-{\cal P}g_{F}m_{F}}{\Delta_{1,F}}\right)I\left(r\right)
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $g_{F}$
+\end_inset
+
+ is the well-known Landé factor and 
+\begin_inset Formula ${\cal P}$
+\end_inset
+
+ characterizes the laser polarization (
+\begin_inset Formula ${\cal P}=0,\pm1$
+\end_inset
+
+ for linearly and circularly 
+\begin_inset Formula $σ^{\pm}$
+\end_inset
+
+ polarized light).
+ The detunings 
+\begin_inset Formula $\Delta_{2,F}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta_{1,F}$
+\end_inset
+
+ refer to the energy splitting between the particular ground state 
+\begin_inset Formula $^{2}S_{1/2}$
+\end_inset
+
+, F and the center of the hyperfinesplit 
+\begin_inset Formula $^{2}P_{3/2}$
+\end_inset
+
+ and 
+\begin_inset Formula $^{2}P_{1/2}$
+\end_inset
+
+ excited states, respectively.
+ The two terms in brackets represent the contributions of the 
+\begin_inset Formula $D2$
+\end_inset
+
+ and the 
+\begin_inset Formula $D1$
+\end_inset
+
+ line to the total dipole potential.
+ 
+\begin_inset Formula $\omega_{0}$
+\end_inset
+
+ is the optical transition frequency of the 
+\begin_inset Formula $D1$
+\end_inset
+
+ line, and 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ is the natural line width of this line.
+\end_layout
+
+\begin_layout Section*
+Results
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename New pics/FiberFieldAzimuthal.png
+	width 60text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Fiber Red + Blue Field Intensity Cross-Section
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename New pics/TrapDepth.png
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Trap depth for various field intensities
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename New pics/ToroidFieldSlice.png
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+A slice of the total potential
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+This figure shows the case where the trap depth is 
+\begin_inset Formula $400(\text{µk)}$
+\end_inset
+
+.
+ Notice how the peak of the barrier that keeping the atom from falling on
+ the toroid is just above zero.
+ There is an interplay here between the height of this barrier and the depth
+ of the trap, so if we want to make extra sure that the atom will not exit
+ the trap to the left (through tunneling), we can raise the barrier, but
+ then we will lose some of the trap depth.
+ Playing with the ratio between red and blue light can also move the trap
+ location farther or closer to the toroid.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename New pics/ToroidFieldTopView.png
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Top view of trap potential
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename New pics/ToroidField.png
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Perspective view of trap potential
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Matlab Code
+\end_layout
+
+\begin_layout Subsection*
+CalculateEvanescentElectricField.m
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function [ElectricFieldEnergy,r,phi] = CalculateEvanescentElectricField(lambda,A
+_in,phi_0,FiberRadius,mode_area,RadialVector,AzimuthalVector)
+\end_layout
+
+\begin_layout Plain Layout
+
+% Returs the energy of the electric field (microK) and the polar coordinates
+ used to plot it correctly.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+% The electric field calculations are taken from kimble article - http://iopscie
+nce.iop.org/article/10.1088/1367-2630/14/2/023056/pdf 
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\end_layout
+
+\begin_layout Plain Layout
+
+% Input parameters :
+\end_layout
+
+\begin_layout Plain Layout
+
+% lambda          - Input field wavelength 
+\end_layout
+
+\begin_layout Plain Layout
+
+% A_in            - Input field intensity 
+\end_layout
+
+\begin_layout Plain Layout
+
+% phi_0           - polarization angle relative to the fiber
+\end_layout
+
+\begin_layout Plain Layout
+
+% FiberRadius     - Radius of waveguide 
+\end_layout
+
+\begin_layout Plain Layout
+
+% beta            - Mode propagation constant 
+\end_layout
+
+\begin_layout Plain Layout
+
+% mode_area       - Effective area (cm^2) occupied by the mode 
+\end_layout
+
+\begin_layout Plain Layout
+
+% RadialVector    - A vector that holds the points in the radial direction
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+% AzimuthalVector - A vecotr that holds the angles for the field calculation.
+ Can also be a scalar.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	n1 = 1.447;                           % Refractive Index Inside Waveguide
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	n2 = 1.0;                             % Refractive Index Outside Waveguide
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	k0 = 2*pi/lambda;                     % Wave number 
+\end_layout
+
+\begin_layout Plain Layout
+
+	beta = (n1+n2)/2*k0; 
+\end_layout
+
+\begin_layout Plain Layout
+
+	h11 = sqrt(k0^2*n1^2-beta^2);        % Characteristic Decay Length Inside
+ Fiber 
+\end_layout
+
+\begin_layout Plain Layout
+
+	q11 = sqrt(beta^2-k0^2*n2^2);        % Characteristic Decay Length Outside
+ Fiber 
+\end_layout
+
+\begin_layout Plain Layout
+
+	a =FiberRadius;                      % Fiber Radius nanometer (changing
+ letters for bervity) 
+\end_layout
+
+\begin_layout Plain Layout
+
+	Kb = 1.38e-23;                       % Boltzmann constant Joule/Kelvin
+\end_layout
+
+\begin_layout Plain Layout
+
+	Gamma = 5.746e6;                     % [Hz] in the 1*gamma formulations
+ (books, not ofer) 
+\end_layout
+
+\begin_layout Plain Layout
+
+	c = 3e8;                             % Speed of light  [m/sec] 
+\end_layout
+
+\begin_layout Plain Layout
+
+	finesse = 2.5e4;                     % finnes of the cavity 
+\end_layout
+
+\begin_layout Plain Layout
+
+	lambda_res1 = 795e-9;                % rubidium87 resonance D1 [meter]
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	lambda_res2 = 780e-9;                % rubidium87 resonance D2 [meter]
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	omega0 = 2*pi*c/lambda_res1;         % Optical transition frequency of
+ D1 
+\end_layout
+
+\begin_layout Plain Layout
+
+	omega1 = 2*pi*c/lambda_res2;         % Optical transition frequency of
+ D2 
+\end_layout
+
+\begin_layout Plain Layout
+
+	omegaIn = 2*pi*c/lambda;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	D_besselk = @(nu,z) 0.5*(besselk(nu-1,z)-besselk(nu+1,z));  % Auxillary
+ function for the derivative of besselk function 
+\end_layout
+
+\begin_layout Plain Layout
+
+	D_besselj = @(nu,z) 0.5*(besselj(nu-1,z)-besselj(nu+1,z));  % Auxillary
+ function for the derivative of besselj function
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% Calculate filed intensity I(r) 
+\end_layout
+
+\begin_layout Plain Layout
+
+	s11 = (1/(h11*a)^2+1/(q11*a)^2)*(D_besselj(1,h11*a)/(h11*a*besselj(1,h11*a))+D_
+besselk(1,q11*a)/(q11*a*besselk(1,q11*a)));
+\end_layout
+
+\begin_layout Plain Layout
+
+	A = A_in*beta*besselj(1,h11*a)/(2*q11*besselk(1,q11*a)); B = 1i*A_in*besselj(1,
+h11*a)/besselk(1,q11*a);
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	if length(AzimuthalVector) > 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	    [r, phi]  = ndgrid(RadialVector,AzimuthalVector);
+\end_layout
+
+\begin_layout Plain Layout
+
+	else     
+\end_layout
+
+\begin_layout Plain Layout
+
+		phi = AzimuthalVector;     
+\end_layout
+
+\begin_layout Plain Layout
+
+		r = RadialVector;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	end
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	Ex = A*((1-s11)*besselk(0,q11*r).*cos(phi_0)+(1+s11)*besselk(2,q11*r).*cos(2*phi-
+phi_0));
+\end_layout
+
+\begin_layout Plain Layout
+
+	Ey = A*((1-s11)*besselk(0,q11*r)*sin(phi_0)+(1+s11)*besselk(2,q11*r).*sin(2*phi-
+phi_0)); 
+\end_layout
+
+\begin_layout Plain Layout
+
+	Ez = B*besselk(1,q11*r).*cos(phi-phi_0);
+\end_layout
+
+\begin_layout Plain Layout
+
+	ElectricFieldIntensity = sqrt(abs(Ex).^2+abs(Ey).^2+abs(Ez).^2);
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% Calculate trap energy U(r)
+\end_layout
+
+\begin_layout Plain Layout
+
+	I = ElectricFieldIntensity/mode_area*finesse;
+\end_layout
+
+\begin_layout Plain Layout
+
+	delta0 = omegaIn - omega0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	delta1 = omegaIn - omega1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	U = (pi*c^2*Gamma/(2*omega0^3))*(2/delta1+1/delta0)*I;
+\end_layout
+
+\begin_layout Plain Layout
+
+	ElectricFieldEnergy = 1e6*U/Kb; % [microK]
+\end_layout
+
+\begin_layout Plain Layout
+
+end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+\begin_inset Newpage newpage
+\end_inset
+
+EvanescentFieldOutsideMicrotoroid.m
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+close all 
+\end_layout
+
+\begin_layout Plain Layout
+
+clear all 
+\end_layout
+
+\begin_layout Plain Layout
+
+%% constants
+\end_layout
+
+\begin_layout Plain Layout
+
+Phi_0 = 0.0;                                 % Input Polariztion Angle 
+\end_layout
+
+\begin_layout Plain Layout
+
+LambdaRed = 1085e-9;                         % Red WaveLength [meter] 
+\end_layout
+
+\begin_layout Plain Layout
+
+LambdaBlue = 729e-9;                         % Blue WaveLength [meter] 
+\end_layout
+
+\begin_layout Plain Layout
+
+ToroidSmallRadius = 750e-9;                  % Fiber Radius [meter] 
+\end_layout
+
+\begin_layout Plain Layout
+
+Kb = 1.38e-23;                               % Joule/Kelvin 
+\end_layout
+
+\begin_layout Plain Layout
+
+A_in_Red = 556e-3;                           % mW
+\end_layout
+
+\begin_layout Plain Layout
+
+A_in_Blue = 75e-3;                           % mW
+\end_layout
+
+\begin_layout Plain Layout
+
+h_bar = 1.054e-34;                           % meter  
+\end_layout
+
+\begin_layout Plain Layout
+
+ToroidLargeRadius = 3971.7e-9;               % meter 
+\end_layout
+
+\begin_layout Plain Layout
+
+c3 = 1e6*(1.6e-19*4.9*(1e-10)^3)*(1e9)^3/Kb; % [microKelvin*nm^3] 
+\end_layout
+
+\begin_layout Plain Layout
+
+mode_area = 300e-8/(40*pi);                  % Area occupied by the mode
+ [cm^2]  
+\end_layout
+
+\begin_layout Plain Layout
+
+ROILength = 2500e-9;                         % length of Region Of Interest
+ away from the fiber 
+\end_layout
+
+\begin_layout Plain Layout
+
+Margin = 15e-9;                              % Too close to the surface
+ the plot explode because of vdw
+\end_layout
+
+\begin_layout Plain Layout
+
+RadialVector = linspace(ToroidSmallRadius+Margin,ToroidSmallRadius+Margin+ROILen
+gth,1000); 
+\end_layout
+
+\begin_layout Plain Layout
+
+Optimization = false; 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+%% Find optimal values for the intensity of the blue and red fields 
+\end_layout
+
+\begin_layout Plain Layout
+
+if Optimization     
+\end_layout
+
+\begin_layout Plain Layout
+
+	OptimizationN = 501;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	TrapDepth = zeros(OptimizationN,OptimizationN);    
+\end_layout
+
+\begin_layout Plain Layout
+
+	TrapSpatialWidth = zeros(OptimizationN,OptimizationN);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	Power1 = linspace(10,500,OptimizationN) *1e-3 / A_in_Blue;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	Power2 = linspace(100,1500,OptimizationN) *1e-3 / A_in_Red;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	VanDerWaals=-c3./(((RadialVector-ToroidSmallRadius)*1e9).^3);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	AzimuthalVector=0;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	RedFieldBase=CalculateEvanescentElectricField(LambdaRed,A_in_Red,Phi_0,ToroidSm
+allRadius,mode_area,RadialVector,0);
+\end_layout
+
+\begin_layout Plain Layout
+
+	[BlueFieldBase,r,phi] = CalculateEvanescentElectricField(LambdaBlue,A_in_Blue,P
+hi_0,ToroidSmallRadius,mode_area*0.67,RadialVector,0);
+\end_layout
+
+\begin_layout Plain Layout
+
+	for i = 1:OptimizationN
+\end_layout
+
+\begin_layout Plain Layout
+
+		for j = 1:OptimizationN                         
+\end_layout
+
+\begin_layout Plain Layout
+
+			RedField = RedFieldBase * Power2(j);             
+\end_layout
+
+\begin_layout Plain Layout
+
+			BlueField = BlueFieldBase * Power1(i);             
+\end_layout
+
+\begin_layout Plain Layout
+
+			TotalField = RedField+BlueField+VanDerWaals;                        
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+			TrapDepth(i,j) = GetTrapDepth(TotalField);         
+\end_layout
+
+\begin_layout Plain Layout
+
+		end             
+\end_layout
+
+\begin_layout Plain Layout
+
+	end          
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% plot optimization process results     
+\end_layout
+
+\begin_layout Plain Layout
+
+	Power1 = Power1 * A_in_Blue;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	Power2 = Power2 * A_in_Red;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	imagesc(Power1*1000,Power2*1000, TrapDepth')     
+\end_layout
+
+\begin_layout Plain Layout
+
+	title('Trap Depth(microK) VS Field Intensities');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel('Blue Field Intensity(microW)');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel('Red Field Intensity(microW)');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	set(gca,'Ydir','Normal');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	set(gca,'Xdir','Normal');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	set(gca,'FontSize',20)     
+\end_layout
+
+\begin_layout Plain Layout
+
+	colormap jet
+\end_layout
+
+\begin_layout Plain Layout
+
+	[C,I] = max(TrapDepth(:));     
+\end_layout
+
+\begin_layout Plain Layout
+
+	[blueInd,redInd] = ind2sub(size(TrapDepth),I);          
+\end_layout
+
+\begin_layout Plain Layout
+
+else     
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% calculate for a specific intensity     
+\end_layout
+
+\begin_layout Plain Layout
+
+	AzimuthalVector = linspace(0,2*pi,1000);         
+\end_layout
+
+\begin_layout Plain Layout
+
+	RedField = CalculateEvanescentElectricField(LambdaRed,A_in_Red,Phi_0,ToroidSmal
+lRadius,mode_area,RadialVector,AzimuthalVector);            
+\end_layout
+
+\begin_layout Plain Layout
+
+	[BlueField,r,phi] = CalculateEvanescentElectricField(LambdaBlue,A_in_Blue,Phi_0
+,ToroidSmallRadius,mode_area*0.67,RadialVector,AzimuthalVector);        
+     
+\end_layout
+
+\begin_layout Plain Layout
+
+	VanDerWaals = -c3./(((r-ToroidSmallRadius)*1e9).^3);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	TotalField = BlueField+RedField+VanDerWaals;             
+\end_layout
+
+\begin_layout Plain Layout
+
+	[x,y] = pol2cart(phi,r);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% plot fiber cross section     figure(1)         
+\end_layout
+
+\begin_layout Plain Layout
+
+	surf(x*1e9,y*1e9,BlueField+RedField,'EdgeColor','none','LineStyle','none','Face
+Lighting','phong');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	view(0,90)     
+\end_layout
+
+\begin_layout Plain Layout
+
+	colormap(jet(1024))     
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlim([-ToroidSmallRadius*2e9 ToroidSmallRadius*2e9])     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylim([-ToroidSmallRadius*2e9 ToroidSmallRadius*2e9])     
+\end_layout
+
+\begin_layout Plain Layout
+
+	daspect([max(daspect)*[1 1] 1]);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	colorbar();         
+\end_layout
+
+\begin_layout Plain Layout
+
+	title('Field Cross-Section of a fiber');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel('X(nm)');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel('Y(nm)');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	set(gca,'Ydir','Normal');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	set(gca,'FontSize',20)            
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% plot radial dependence at maximum     
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(2)     
+\end_layout
+
+\begin_layout Plain Layout
+
+	hold on         
+\end_layout
+
+\begin_layout Plain Layout
+
+	if length(AzimuthalVector) > 1         
+\end_layout
+
+\begin_layout Plain Layout
+
+		TotalFieldSlice = TotalField(:,1);         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)',RedField(:,1)','r')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)',BlueField(:,1)','b')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)',VanDerWaals(:,1)','g')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)', TotalField(:,1)','k');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		legend('red','blue','Van Der Waals','Total');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		y1 = ylim;         
+\end_layout
+
+\begin_layout Plain Layout
+
+		ylim([y1(1)/2 max(TotalFieldSlice)*1.1]);                 
+\end_layout
+
+\begin_layout Plain Layout
+
+		title(sprintf('Trap Potential VS Radial Distance.
+ Blue: %d (mW).
+ Red: %d (mW)',A_in_Blue*1000,A_in_Red*1000));         
+\end_layout
+
+\begin_layout Plain Layout
+
+		xlabel('Radial Distance(nm)');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		ylabel('Potentail(microK)');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		set(gca,'Ydir','Normal');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		set(gca,'FontSize',20)           
+\end_layout
+
+\begin_layout Plain Layout
+
+		axes('position',[.55 .175 .35 .35])         
+\end_layout
+
+\begin_layout Plain Layout
+
+		box on              
+\end_layout
+
+\begin_layout Plain Layout
+
+		hold on         
+\end_layout
+
+\begin_layout Plain Layout
+
+		title('Trap Inset')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)',RedField(:,1)','r')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)',BlueField(:,1)','b')                    
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)',VanDerWaals(:,1)','g')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r(:,1)', TotalField(:,1)','k');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		peak = findpeaks(-TotalFieldSlice(40:end));         
+\end_layout
+
+\begin_layout Plain Layout
+
+		ylim([-peak*1.1 peak/3]);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	else             
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r,RedField,'r')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r,BlueField,'b')               
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r,VanDerWaals,'g')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r, TotalField,'k');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		legend('red','blue','Van Der Waals','Total');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		y1 = ylim;         
+\end_layout
+
+\begin_layout Plain Layout
+
+		ylim([y1(1)/2 max(TotalField)*1.1])           
+\end_layout
+
+\begin_layout Plain Layout
+
+		title(sprintf('Trap Potential VS Radial Distance.
+ Blue: %d (mW).
+ Red: %d (mW)',A_in_Blue*1000,A_in_Red*1000));         
+\end_layout
+
+\begin_layout Plain Layout
+
+		xlabel('Radial Distance(nm)');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		ylabel('Potentail(microK)');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		set(gca,'Ydir','Normal');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		set(gca,'FontSize',20)           
+\end_layout
+
+\begin_layout Plain Layout
+
+		axes('position',[.55 .175 .35 .35])         
+\end_layout
+
+\begin_layout Plain Layout
+
+		box on              
+\end_layout
+
+\begin_layout Plain Layout
+
+		hold on         
+\end_layout
+
+\begin_layout Plain Layout
+
+		title('Trap Inset')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r,RedField,'r')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r,BlueField,'b')                 
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r,VanDerWaals,'g')         
+\end_layout
+
+\begin_layout Plain Layout
+
+		plot(r, TotalField,'k');         
+\end_layout
+
+\begin_layout Plain Layout
+
+		peak = findpeaks(-TotalField(40:end));         
+\end_layout
+
+\begin_layout Plain Layout
+
+		ylim([-peak*1.1 peak/3])       
+\end_layout
+
+\begin_layout Plain Layout
+
+	end               
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% plot 3d potential     
+\end_layout
+
+\begin_layout Plain Layout
+
+	figure(3)     
+\end_layout
+
+\begin_layout Plain Layout
+
+	NumOscillationsInToroid = round(2*pi*ToroidLargeRadius/LambdaRed);    
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+	ToroidField = repmat(TotalField(:,1),1,size(phi,2)) .* cos(NumOscillationsInToro
+id*phi);         
+\end_layout
+
+\begin_layout Plain Layout
+
+	[x,y] = pol2cart(phi,r+ToroidLargeRadius);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	surf(x*1e9,y*1e9,ToroidField,'EdgeColor','none','LineStyle','none','FaceLightin
+g','phong');         
+\end_layout
+
+\begin_layout Plain Layout
+
+	colormap(jet(1024))     
+\end_layout
+
+\begin_layout Plain Layout
+
+	title('Total Toroid Potential');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	xlabel('X(nm)');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ylabel('Y(nm)');       
+\end_layout
+
+\begin_layout Plain Layout
+
+	zlabel('Potential (microK)');     
+\end_layout
+
+\begin_layout Plain Layout
+
+	set(gca,'FontSize',20)              
+\end_layout
+
+\begin_layout Plain Layout
+
+	daspect([max(daspect)*[0.01 0.01] 0.1])     
+\end_layout
+
+\begin_layout Plain Layout
+
+	caxis([-peak*1.1 peak/3])     
+\end_layout
+
+\begin_layout Plain Layout
+
+	zlim([-peak*6 peak*7])              
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	%% plot toroid along with potentail           
+\end_layout
+
+\begin_layout Plain Layout
+
+	hold on     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ToroidColormap = gray(256);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ToroidColormap = ToroidColormap(1:200,:);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ToroidColormap = cat(1,ToroidColormap,flip(ToroidColormap,1));     
+\end_layout
+
+\begin_layout Plain Layout
+
+	[ToroidBodyX,ToroidBodyY,ToroidBodyZ] = Torus(ToroidLargeRadius*1e9,ToroidSmall
+Radius*1e9,360);     
+\end_layout
+
+\begin_layout Plain Layout
+
+	ToroidBodyZ = ToroidBodyZ/max(max(ToroidBodyZ))*max(max(ToroidBodyX))*ToroidSma
+llRadius/ToroidLargeRadius*2;   
+\end_layout
+
+\begin_layout Plain Layout
+
+	surf(ToroidBodyX,ToroidBodyY,ToroidBodyZ,'EdgeColor','none','LineStyle','none',
+'FaceLighting','phong');          
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+GetTrapDepth.m
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status collapsed
+
+\begin_layout Plain Layout
+
+function [TrapDepth,TrapLocation] = GetTrapDepth(Field)
+\end_layout
+
+\begin_layout Plain Layout
+
+	if max(Field) < 0          
+\end_layout
+
+\begin_layout Plain Layout
+
+		TrapDepth = 0;         
+\end_layout
+
+\begin_layout Plain Layout
+
+		return;     
+\end_layout
+
+\begin_layout Plain Layout
+
+	end     
+\end_layout
+
+\begin_layout Plain Layout
+
+	dField = diff(Field(50:round(length(Field)/2)));     
+\end_layout
+
+\begin_layout Plain Layout
+
+	[~,TrapLocation] = min(abs(dField));        
+\end_layout
+
+\begin_layout Plain Layout
+
+	if TrapLocation == length(dField) || dField(TrapLocation-1)*dField(TrapLocation
++1) > 0            
+\end_layout
+
+\begin_layout Plain Layout
+
+		TrapDepth = 0;         
+\end_layout
+
+\begin_layout Plain Layout
+
+	else         
+\end_layout
+
+\begin_layout Plain Layout
+
+		TrapDepth = abs(Field(TrapLocation+49));     
+\end_layout
+
+\begin_layout Plain Layout
+
+	end     
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
